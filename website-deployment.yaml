@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: website-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: website
+  template:
+    metadata:
+      labels:
+        app: website
+    spec:
+      containers:
+        - name: website
+          image: ristabel/ecom-web:v1
+          ports:
+            - containerPort: 80 
+          envFrom:
+            - configMapRef:
+                name: feature-toggle-config
+          env:
+            - name: DB_HOST
+              value: mysql-service
+            - name: DB_PASSWORD
+              value: ecompassword
+            - name: DB_USER
+              value: ecomuser 
+            - name: DB_NAME
+              value: ecomdb
+      initContainers:
+        - name: grant-privileges
+          image: mariadb:11.2
+          command: ["mariadb", "-h", "mysql-service", "-u", "root", "--password=ecompassword", "-e", "source /etc/grant.sql"]
+          volumeMounts:
+            - name: db-load-script-volume
+              mountPath: /docker-entrypoint-initdb.d   # Update this with the actual mount path in your container
+            - name: grant-script
+              mountPath: /etc/grant.sql
+              subPath: grant.sql
+      volumes:
+        - name: db-load-script-volume
+          configMap:
+            name: db-load-script-configmap
+        - name: grant-script
+          configMap:
+            name: grant-privileges-script
+

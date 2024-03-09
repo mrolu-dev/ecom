@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:11.2
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          value: ecompassword
+
+        - name: MARIADB_USER
+          value: ecomuser 
+        - name: MARIADB_DATABASE
+          value: ecomdb        
+        volumeMounts:
+        - name: mariadb-data
+          mountPath: /var/lib/mysql
+        - name: db-load-script-volume
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: mariadb-data
+        emptyDir: {}
+      - name: db-load-script-volume
+        configMap:
+          name: db-load-script-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+spec:
+  selector:
+    app: mariadb
+  ports:
+    - protocol: TCP
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP
