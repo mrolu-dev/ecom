@@ -22,8 +22,20 @@
         <link rel="stylesheet" href="vendors/owl_carousel/owl.carousel.css">
 
         <!-- Theme style CSS -->
-        <link href="css/style.css" rel="stylesheet">
-        <link href="css/dark-mode.css" rel="stylesheet">
+        
+        <?php
+        // Check if the environmental variable FEATURE_DARK_MODE is set and is true
+            if (getenv('FEATURE_DARK_MODE') === 'true') {
+                // If FEATURE_DARK_MODE is true, include the dark mode stylesheet
+                echo '<link rel="stylesheet" href="css/dark-mode.css">';
+            } else {
+                // If FEATURE_DARK_MODE is not true (false or unset), include the regular stylesheet
+                echo '<link rel="stylesheet" href="css/style.css">';
+            }
+        ?>
+
+        <!-- <link href="css/style.css" rel="stylesheet">
+        <link href="css/dark-mode.css" rel="stylesheet"> -->
        
 <!--        <link href="css/responsive.css" rel="stylesheet">  -->
 
@@ -102,6 +114,19 @@
             </div>
         </section>
         <!--==========End Slider area==========-->
+        <!--==========Start Promotional Banner area==========-->
+        <div class="spacer"></div> <!-- Add a spacer div for space -->
+
+        <div class="banner">
+            <div class="banner-content">
+                <h2>Special Offer!</h2>
+                <p>Get 20% off on all products. Limited time offer.</p>
+                <a href="https://jabuntu.com" class="btn">Shop Now</a> <!-- Update the href attribute -->
+            </div>
+        </div>
+
+
+        <!--==========Start Promotional Banner area==========-->
 
         <section class="best_business_area row">
             <div class="check_tittle wow fadeInUp" data-wow-delay="0.7s" id="product-list">

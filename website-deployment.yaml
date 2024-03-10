@@ -14,12 +14,9 @@ spec:
     spec:
       containers:
         - name: website
-          image: ristabel/ecom-web:v1
+          image: ristabel/ecom-web:v2
           ports:
             - containerPort: 80 
-          envFrom:
-            - configMapRef:
-                name: feature-toggle-config
           env:
             - name: DB_HOST
               value: mysql-service
@@ -29,21 +26,13 @@ spec:
               value: ecomuser 
             - name: DB_NAME
               value: ecomdb
-      initContainers:
-        - name: grant-privileges
-          image: mariadb:11.2
-          command: ["mariadb", "-h", "mysql-service", "-u", "root", "--password=ecompassword", "-e", "source /etc/grant.sql"]
-          volumeMounts:
-            - name: db-load-script-volume
-              mountPath: /docker-entrypoint-initdb.d   # Update this with the actual mount path in your container
-            - name: grant-script
-              mountPath: /etc/grant.sql
-              subPath: grant.sql
+            - name: FEATURE_DARK_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: feature-toggle-config
+                  key: FEATURE_DARK_MODE
       volumes:
         - name: db-load-script-volume
           configMap:
             name: db-load-script-configmap
-        - name: grant-script
-          configMap:
-            name: grant-privileges-script
 
