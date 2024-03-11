@@ -1,11 +1,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: db-load-script-configmap
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-db-load-script-configmap
 data:
   db-load-script.sql: |
-    USE ecomdb;
+    CREATE DATABASE IF NOT EXISTS ecomdb;
 
+    USE ecomdb;
     CREATE TABLE products (
       id mediumint(8) unsigned NOT NULL auto_increment,
       Name varchar(255) default NULL,
@@ -23,3 +24,5 @@ data:
     ("Phone Covers", "20", "c-7.png"),
     ("Phone", "80", "c-8.png"),
     ("Laptop", "150", "c-4.png");
+
+    GRANT ALL PRIVILEGES ON ecomdb.* TO 'ecomuser'@'%' IDENTIFIED BY 'ecompassword';

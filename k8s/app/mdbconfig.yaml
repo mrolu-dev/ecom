@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-user-db-configmap
+data:
+  MARIADB_USER: ecomuser
+  MARIADB_DATABASE: ecomdb

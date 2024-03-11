@@ -19,12 +19,20 @@ spec:
         - containerPort: 3306
         env:
         - name: MARIADB_ROOT_PASSWORD
-          value: ecompassword
-
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-root-password
+              key: MARIADB_ROOT_PASSWORD
         - name: MARIADB_USER
-          value: ecomuser 
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-user-db-configmap
+              key: MARIADB_USER
         - name: MARIADB_DATABASE
-          value: ecomdb        
+          valueFrom:
+            configMapKeyRef:
+              name: mariadb-user-db-configmap
+              key: MARIADB_DATABASE
         volumeMounts:
         - name: mariadb-data
           mountPath: /var/lib/mysql
@@ -36,16 +44,3 @@ spec:
       - name: db-load-script-volume
         configMap:
           name: db-load-script-configmap
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql-service
-spec:
-  selector:
-    app: mariadb
-  ports:
-    - protocol: TCP
-      port: 3306
-      targetPort: 3306
-  type: ClusterIP

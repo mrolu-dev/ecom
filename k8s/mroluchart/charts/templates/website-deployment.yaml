@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-website-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-{{ .Chart.Name }}-website
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-{{ .Chart.Name }}-website
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-{{ .Chart.Name }}-website
+          image: {{ .Values.app.image.name }}:{{ .Values.app.image.tag }}
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.app.ports.port }} 
+          env:
+            - name: DB_HOST
+              value: mysql-service
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb-root-password
+                  key: MARIADB_ROOT_PASSWORD
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb-user-db-configmap
+                  key: MARIADB_USER
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb-user-db-configmap
+                  key: MARIADB_DATABASE
+            - name: FEATURE_DARK_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}-feature-toggle-config
+                  key: FEATURE_DARK_MODE
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}            
+      volumes:
+        - name: {{ .Release.Name }}-{{ .Chart.Name }}-db-load-script-volume
+          configMap:
+            name: {{ .Release.Name }}-{{ .Chart.Name }}-db-load-script-configmap
+
+
+   

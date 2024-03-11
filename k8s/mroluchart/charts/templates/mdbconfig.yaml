@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb-user-db-configmap
+data:
+  MARIADB_USER: {{ .Values.db.user }} 
+  MARIADB_DATABASE: {{ .Values.db.name }} 

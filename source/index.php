@@ -126,7 +126,7 @@
         </div>
 
 
-        <!--==========Start Promotional Banner area==========-->
+        <!--==========End Promotional Banner area==========-->
 
         <section class="best_business_area row">
             <div class="check_tittle wow fadeInUp" data-wow-delay="0.7s" id="product-list">

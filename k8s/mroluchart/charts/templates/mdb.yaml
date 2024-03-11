@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-mysql-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb
+        image: {{ .Values.db.image.name }}:{{ .Values.db.image.tag }}   
+        ports:
+        - containerPort: {{ .Values.db.port }}
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb-root-password
+              key: MARIADB_ROOT_PASSWORD
+        - name: MARIADB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb-user-db-configmap
+              key: MARIADB_USER
+        - name: MARIADB_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb-user-db-configmap
+              key: MARIADB_DATABASE
+        volumeMounts:
+        - name: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb-data
+          mountPath: /var/lib/mysql
+        - name: {{ .Release.Name }}-{{ .Chart.Name }}-db-load-script-volume
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb-data
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-{{ .Chart.Name }}-mariadb-data-claim
+      - name: {{ .Release.Name }}-{{ .Chart.Name }}-db-load-script-volume
+        configMap:
+          name: {{ .Release.Name }}-{{ .Chart.Name }}-db-load-script-configmap
