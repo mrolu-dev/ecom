@@ -25,4 +25,5 @@ data:
     ("Phone", "80", "c-8.png"),
     ("Laptop", "150", "c-4.png");
 
+
     GRANT ALL PRIVILEGES ON ecomdb.* TO 'ecomuser'@'%' IDENTIFIED BY 'ecompassword';
