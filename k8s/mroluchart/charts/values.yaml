@@ -7,7 +7,7 @@ replicaCount: 1
 app:
   image:
     name: ristabel/ecom-web
-    tag: v2
+    tag: v1
     pullPolicy: Always
 
   ports:
